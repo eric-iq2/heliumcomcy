@@ -6,6 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>helium | HNT | cy</title>
 
+  <!-- Raw power -->
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"
+    integrity="sha256-qXBd/EfAdjOA2FGrGAG+b3YBn2tn5A6bhz+LSgYD96k=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
   <!-- Leaflet required -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
@@ -13,6 +18,11 @@
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
     crossorigin=""></script>
+
+  <!-- Map and hotspot related -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/randomcolor/0.6.1/randomColor.min.js"
+    integrity="sha512-vPeZ7JCboHcfpqSx5ZD+/jpEhS4JpXxfz9orSvAPPj0EKUVShU2tgy7XkU+oujBJKnWmu4hU7r9MMQNWPfXsYw=="
+    crossorigin="anonymous"></script>
 
   <!-- update the version number as needed -->
   <script defer src="/__/firebase/8.4.3/firebase-app.js"></script>
@@ -110,6 +120,41 @@
         zoomOffset: -1,
         accessToken: 'pk.eyJ1IjoiZXJpYy1oZWxpdW0iLCJhIjoiY2tvNnp4ZnhuMXI2MjJvczVhODFiNG9wZCJ9.lbv1OPPLn1gUY9Lk1owA0Q'
       }).addTo(mymap);
+
+      axios.get('https://api.helium.io/v1/hotspots/location/box?swlat=34.357042&swlon=31.854858&nelat=35.811131&nelon=34.925537')
+        .then(function (response) {
+          console.log(response);
+          if (response && response.data && response.data.data) {
+            var data = response.data.data;
+            _.each(data, function (x) {
+              var c = randomColor({
+                seed: x.owner,
+                luminosity: 'dark',
+                format: 'rgba',
+                alpha: 0.5
+              });
+              var circle = L.circle([x.lat, x.lng], {
+                color: c,
+                fillColor: c,
+                fillOpacity: 0.5,
+                radius: 300
+              }).addTo(mymap);
+              var circle = L.circle([x.lat, x.lng], {
+                color: "transparent",
+                fillColor: c,
+                fillOpacity: 0.1,
+                radius: 3000
+              }).addTo(mymap);
+            });
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+
+        })
+        .then(function () {
+
+        });
     });
   </script>
 </body>
