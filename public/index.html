@@ -93,11 +93,17 @@
       // firebase.functions().httpsCallable('yourFunction')().then(() => { });
       // firebase.messaging().requestPermission().then(() => { });
       // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-      firebase.analytics(); // call to activate
+      // firebase.analytics(); // call to activate
       // firebase.analytics().logEvent('tutorial_completed');
       // firebase.performance(); // call to activate
       //
       // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+
+      var db = firebase.database();
+      if (location.hostname === "localhost") {
+        // Point to the RTDB emulator running on localhost.
+        db.useEmulator("localhost", 9000);
+      }
 
       try {
         let app = firebase.app();
@@ -145,10 +151,11 @@
                 alpha: 0.5
               });
               var circleLarge = L.circle([x.lat, x.lng], {
-                color: "transparent",
+                stroke: false,
                 fillColor: c,
                 fillOpacity: 0.1,
-                radius: 2800
+                radius: 2800,
+                interactive: false
               }).addTo(mymap);
               var circleSmall = L.circle([x.lat, x.lng], {
                 color: c,
@@ -156,7 +163,7 @@
                 fillOpacity: 0.5,
                 radius: 300
               }).addTo(mymap);
-              circleSmall.bindPopup(x.name);
+              circleSmall.bindTooltip(x.name);
             });
           }
         })
@@ -167,18 +174,24 @@
         .then(function () {
 
         });
-      var spotsRef = firebase.database().ref('spots');
+
+      var spotsRef = db.ref('spots');
       spotsRef.on('value', (snapshot) => {
         var spots = snapshot.val();
         _.each(spots, function (x) {
           var c = randomColor({
             seed: x.name,
-            luminosity: 'dark',
+            luminosity: 'light',
             format: 'rgba',
             alpha: 0.5
           });
-          var marker = L.marker([x.lat, x.lng]).addTo(mymap);
-          marker.bindPopup(x.name);
+          var circleSmall = L.circle([x.lat, x.lng], {
+            stroke: false,
+            fillColor: c,
+            fillOpacity: 0.5,
+            radius: 300
+          }).addTo(mymap);
+          circleSmall.bindTooltip(x.name);
         });
       });
     });
