@@ -32,13 +32,13 @@
   <!-- include only the Firebase features as you need -->
   <script defer src="/__/firebase/8.4.3/firebase-auth.js"></script>
   <script defer src="/__/firebase/8.4.3/firebase-database.js"></script>
-  <script defer src="/__/firebase/8.4.3/firebase-firestore.js"></script>
-  <script defer src="/__/firebase/8.4.3/firebase-functions.js"></script>
-  <script defer src="/__/firebase/8.4.3/firebase-messaging.js"></script>
-  <script defer src="/__/firebase/8.4.3/firebase-storage.js"></script>
+  <!-- <script defer src="/__/firebase/8.4.3/firebase-firestore.js"></script> -->
+  <!-- <script defer src="/__/firebase/8.4.3/firebase-functions.js"></script> -->
+  <!-- <script defer src="/__/firebase/8.4.3/firebase-messaging.js"></script> -->
+  <!-- <script defer src="/__/firebase/8.4.3/firebase-storage.js"></script> -->
   <script defer src="/__/firebase/8.4.3/firebase-analytics.js"></script>
-  <script defer src="/__/firebase/8.4.3/firebase-remote-config.js"></script>
-  <script defer src="/__/firebase/8.4.3/firebase-performance.js"></script>
+  <!-- <script defer src="/__/firebase/8.4.3/firebase-remote-config.js"></script> -->
+  <!-- <script defer src="/__/firebase/8.4.3/firebase-performance.js"></script> -->
   <!-- 
       initialize the SDK after all desired features are loaded, set useEmulator to false
       to avoid connecting the SDK to running emulators.
@@ -93,7 +93,7 @@
       // firebase.functions().httpsCallable('yourFunction')().then(() => { });
       // firebase.messaging().requestPermission().then(() => { });
       // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-      // firebase.analytics(); // call to activate
+      firebase.analytics(); // call to activate
       // firebase.analytics().logEvent('tutorial_completed');
       // firebase.performance(); // call to activate
       //
@@ -135,7 +135,6 @@
 
       axios.get('https://api.helium.io/v1/hotspots/location/box?swlat=34.357042&swlon=31.854858&nelat=35.811131&nelon=34.925537')
         .then(function (response) {
-          console.log(response);
           if (response && response.data && response.data.data) {
             var data = response.data.data;
             _.each(data, function (x) {
@@ -145,18 +144,19 @@
                 format: 'rgba',
                 alpha: 0.5
               });
-              var circle = L.circle([x.lat, x.lng], {
+              var circleLarge = L.circle([x.lat, x.lng], {
+                color: "transparent",
+                fillColor: c,
+                fillOpacity: 0.1,
+                radius: 2800
+              }).addTo(mymap);
+              var circleSmall = L.circle([x.lat, x.lng], {
                 color: c,
                 fillColor: c,
                 fillOpacity: 0.5,
                 radius: 300
               }).addTo(mymap);
-              var circle = L.circle([x.lat, x.lng], {
-                color: "transparent",
-                fillColor: c,
-                fillOpacity: 0.1,
-                radius: 3000
-              }).addTo(mymap);
+              circleSmall.bindPopup(x.name);
             });
           }
         })
@@ -167,6 +167,20 @@
         .then(function () {
 
         });
+      var spotsRef = firebase.database().ref('spots');
+      spotsRef.on('value', (snapshot) => {
+        var spots = snapshot.val();
+        _.each(spots, function (x) {
+          var c = randomColor({
+            seed: x.name,
+            luminosity: 'dark',
+            format: 'rgba',
+            alpha: 0.5
+          });
+          var marker = L.marker([x.lat, x.lng]).addTo(mymap);
+          marker.bindPopup(x.name);
+        });
+      });
     });
   </script>
 </body>

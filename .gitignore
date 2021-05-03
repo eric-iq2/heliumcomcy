@@ -1,3 +1,96 @@
+#
+# Copyright (c) 2017 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+# in compliance with the License. You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the
+# License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+# express or implied. See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# Intellij
+*.iml
+.idea
+
+# Android Studio
+captures/
+.externalNativeBuild
+
+# Gradle files
+.gradle/
+build/
+
+# Built Android application files
+*.apk
+
+# Local configuration file (ex. SDK path)
+local.properties
+
+# Google Services (ex. APIs and Firebase)
+google-services.json
+GoogleService-Info.plist
+
+# Firebase Hosting
+.firebaserc
+firebase-debug.log
+
+# Build generated
+build/
+DerivedData/
+
+# Various Xcode settings
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+
+# Other Xcode files
+*.moved-aside
+*.xccheckout
+*.xcscmblueprint
+
+# Obj-C/Swift specific
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# CocoaPods
+Pods/
+
+# Chrome Extension related
+*.pem
+*.crx
+
+# Local config/setup
+database.rules.json
+samples/android/Continote/app/src/main/res/values/strings.xml
+samples/chrome-extension/Continote/scripts/config.js
+samples/ios/Continote/Continote/Constants.swift
+samples/ios/Continote/Continote/Info.plist
+samples/ios/Continote/Continote.xcodeproj/project.pbxproj
+samples/web/Continote/database.rules.json
+samples/web/Continote/public/scripts/config.js
+
+# Libraries for samples
+samples/android/Continote/app/libs/*.aar
+samples/chrome-extension/Continote/scripts/firebase-continue.js
+samples/ios/Continote/Continote/FCNContinue.h
+samples/ios/Continote/Continote/FCNContinue.m
+
+# Misc.
+.DS_Store
+*.swp
+
 # Logs
 logs
 *.log
