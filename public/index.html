@@ -52,17 +52,11 @@
     }
 
     body {
-      background: #ECEFF1;
+      background: #333;
       color: rgba(0, 0, 0, 0.87);
       font-family: Roboto, Helvetica, Arial, sans-serif;
       margin: 0;
       padding: 0;
-    }
-
-    #load {
-      color: rgba(0, 0, 0, 0.4);
-      text-align: center;
-      font-size: 13px;
     }
 
     #mapid {
@@ -71,7 +65,7 @@
 
     @media (max-width: 600px) {
       body {
-        border-top: 16px solid #ffa100;
+        border-top: 16px solid #4400ff;
       }
     }
   </style>
@@ -79,12 +73,9 @@
 
 <body>
   <div id="mapid"></div>
-  <p id="load">Firebase SDK Loading&hellip;</p>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      const loadEl = document.querySelector('#load');
-      // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
       // // The Firebase SDK is initialized and available here!
       //
       // firebase.auth().onAuthStateChanged(user => { });
@@ -93,16 +84,16 @@
       // firebase.functions().httpsCallable('yourFunction')().then(() => { });
       // firebase.messaging().requestPermission().then(() => { });
       // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-      // firebase.analytics(); // call to activate
-      // firebase.analytics().logEvent('tutorial_completed');
       // firebase.performance(); // call to activate
-      //
-      // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
 
       var db = firebase.database();
       if (location.hostname === "localhost") {
         // Point to the RTDB emulator running on localhost.
         db.useEmulator("localhost", 9000);
+        console.log("localhost detected");
+      } else {
+        firebase.analytics(); // call to activate
+        firebase.analytics().logEvent('load_completed');
       }
 
       try {
@@ -118,10 +109,10 @@
           'remoteConfig',
           'performance',
         ].filter(feature => typeof app[feature] === 'function');
-        loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
+        console.info(`Firebase SDK loaded with ${features.join(', ')}`);
       } catch (e) {
         console.error(e);
-        loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+        console.warn('Error loading the Firebase SDK, check the console.');
       }
 
       // Leaflet
@@ -129,7 +120,7 @@
         fullscreenControl: {
           pseudoFullscreen: false
         }
-      }).setView([35.1, 33.4], 9);
+      }).setView([35.1, 33.4], 10);
       L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZXJpYy1oZWxpdW0iLCJhIjoiY2tvNnp4ZnhuMXI2MjJvczVhODFiNG9wZCJ9.lbv1OPPLn1gUY9Lk1owA0Q', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
         maxZoom: 18,
