@@ -75,6 +75,9 @@
   <div id="mapid"></div>
 
   <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const witnessOn = urlParams.get('witnessOn') ?? false;
+
     document.addEventListener('DOMContentLoaded', function () {
       // // The Firebase SDK is initialized and available here!
       //
@@ -134,6 +137,7 @@
         .then(function (response) {
           if (response && response.data && response.data.data) {
             var data = response.data.data;
+
             _.each(data, function (x) {
               var c = randomColor({
                 seed: x.owner,
@@ -145,10 +149,11 @@
                 stroke: false,
                 fillColor: c,
                 fillOpacity: 0.1,
-                radius: 2800,
+                radius: x.status.height / 300 ?? 2800,
                 interactive: false
               }).addTo(mymap);
               var circleSmall = L.circle([x.lat, x.lng], {
+                stroke: x.status.online == "online",
                 color: c,
                 fillColor: c,
                 fillOpacity: 0.5,
@@ -156,6 +161,34 @@
               }).addTo(mymap);
               circleSmall.bindTooltip(x.name);
             });
+
+            if (witnessOn) {
+              _.each(data, function (x) {
+                axios.get(`https://api.helium.io/v1/hotspots/${x.address}/witnesses`)
+                  .then(function (response) {
+                    if (response && response.data && response.data.data) {
+                      var data = response.data.data;
+                      var cc = randomColor({
+                        seed: x.owner,
+                        luminosity: 'dark',
+                        format: 'rgba',
+                        alpha: 0.25
+                      });
+                      _.each(data, function (d) {
+                        var latlngs = [[x.lat, x.lng], [d.lat, d.lng]];
+                        var polyline = L.polyline(latlngs, { color: cc }).addTo(mymap);
+                      });
+                    }
+                  })
+                  .catch(function (error) {
+                    console.log(error);
+
+                  })
+                  .then(function () {
+
+                  });
+              });
+            }
           }
         })
         .catch(function (error) {
