@@ -1,0 +1,978 @@
+.card-bd{
+	.num-text{
+		font-size:58px;
+		@include respond ('tab-land'){
+			font-size:35px;
+		}
+	}
+	.card-border{
+		position:absolute;
+		top:0;
+		left:0;
+		height:6px;
+		width: 100%;
+		border-radius:5px;
+	}
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice{
+	border-radius:15px;
+}
+
+
+
+
+.apexcharts-tooltip.apexcharts-theme-light{
+	border-radius: $radius;
+	background: #ffffff;
+	border: 0 !important;
+	box-shadow: 0px 0px 50px 0px rgba(82, 63, 105, 0.15);
+}
+.apexcharts-xaxistooltip.apexcharts-theme-light{
+	border-radius: 0.42rem !important;
+    -webkit-box-shadow: 0px 0px 50px 0px rgba(82, 63, 105, 0.15) !important;
+    box-shadow: 0px 0px 50px 0px rgba(82, 63, 105, 0.15) !important;
+    border: 0 !important;
+    background: #ffffff !important;
+}
+.apexcharts-tooltip.apexcharts-theme-light .apexcharts-tooltip-title{
+	background: #F3F6F9 !important;
+    border: 0 !important;
+}
+.apexcharts-tooltip .apexcharts-tooltip-title {
+    padding: 0.5rem 1rem;
+}
+.apexcharts-xaxistooltip.apexcharts-theme-light:before {
+    border-bottom: 0 !important;
+}
+.apexcharts-xaxistooltip.apexcharts-theme-light:after {
+    border-bottom-color: #ffffff !important;
+}
+
+
+
+
+
+//message box
+
+.message-bx{
+	.image-bx{
+		position:relative;
+		display:inline-block;
+		.img-1{
+			width:58px;
+			height:58px;
+			@include respond ('phone'){
+				height:45px;
+				width:45px;
+			}
+		}
+		span.active{
+			position:absolute;
+			bottom:-5px;
+			right:-5px;
+			height:24px;
+			width:24px;
+			background:$primary;
+			border:4px solid $white;
+			border-radius:3rem;
+			@include respond ('phone'){
+				bottom: 0px;
+				right: 0px;
+				height: 15px;
+				width: 15px;
+				border: 3px solid $white;
+			}
+		}
+	}
+	p{
+		font-size:14px;
+		@include respond ('phone'){
+			font-size:12px;
+		}
+	}
+}
+.power-ic{
+	i{
+		font-size: 34px;
+		height: 55px;
+		width: 55px;
+		text-align: center;
+		line-height: 55px;
+		border-radius: 50px;
+		color: white;
+		font-weight: bold;
+		background:$primary;
+	}
+	@include respond ('phone'){
+		i{
+			font-size: 24px;
+			height: 44px;
+			width: 44px;
+			line-height:44px;
+		}
+	}
+}
+.up-project-bx{
+	@include respond ('phone'){
+		.sub-title{
+			font-size:14px!important;
+			margin-bottom:0!important;
+		}
+		.title {
+			font-size:15px!important;
+		}
+	}
+}
+.card-header{
+	a{
+		i{
+			width: 51px;
+			height: 51px;
+			line-height: 50px;
+			background: $primary;
+			text-align: center;
+			color: white;
+			border-radius: 16px;
+			
+		}
+	}
+}
+.users{
+	display:flex;
+	justify-content:flex-end;
+	li{
+		margin-right: -7px;	
+		img{
+			border-radius:36px;
+			height: 36px;
+			width: 36px;
+			border: 2px solid #fff;
+		}
+	}
+}
+.kanbanPreview-bx{
+	background-color:transparent;
+	box-shadow:none;
+	.card-body{
+		padding:0;
+		.sub-card{
+			margin-bottom:20px;
+			background-color:$white;
+			border-radius:$radius;
+			padding: 1.3rem 1.875rem;
+			box-shadow: 0px 0px 13px 0px rgba(82, 63, 105,0.05);
+			&>.sub-title{
+				margin-bottom:10px;
+				display:block;
+				font-weight: 600;
+				font-size:14px;
+			}
+			@include respond ('phone'){
+				padding:1rem;
+				margin-bottom: 10px;
+				&>.sub-title{
+					margin-bottom:2px;
+				}
+			}
+			.dropzone{
+				min-height:70px;
+				border-radius:$radius;
+				height:70px;
+				background: transparent;
+				border-style: dashed;
+				.dz-message{
+					margin:0;
+				}
+			}
+		}
+	}
+}
+
+.draggable{
+	-webkit-transition:opacity .3s ease;
+	transition:opacity .3s ease;
+	outline:0!important
+}
+.draggable.draggable-mirror{
+	opacity:.8;
+	-webkit-transition:opacity .3s ease;
+	transition:opacity .3s ease;
+	border-radius:$radius;
+	padding: 1.3rem 1.6rem;
+	background:$white;
+	border:2px dashed #e4e6ef!important
+}
+.draggable.draggable--original{
+	opacity:0!important
+}
+.draggable.draggable-source--is-dragging.draggable--over{
+	opacity:0!important
+}
+.draggable-handle{
+	cursor: all-scroll;
+}
+.draggable-zone{
+	outline:0!important
+}
+
+.plus-icon{
+	height:60px;
+	width:60px;
+	line-height:60px;
+	font-size:24px;
+	@include transitionMedium;
+	min-width:60px;
+	text-align:center;
+	border-radius:$radius;
+	background:rgba($white,0.2);
+	color:$white;
+	&:hover{
+		color:$white;
+	}
+	@include respond ('phone'){
+		height:50px;
+		width:50px;
+		font-size:20px;
+		line-height:50px;
+		min-width:50px;
+		border-radius:50%;
+	}
+}
+
+.project-status {
+    justify-content: space-between;
+}
+
+.deznav .copyright {
+    font-size: 14px;
+    padding: 0 45px;
+    margin-top: 40px;
+    color: #969BA0;
+    margin-bottom: 40px;
+	@include custommq($max: 1350px) {
+		padding:0px 15px;
+		margin-bottom:25px;
+		margin-top:25px;
+	}
+}
+
+//card-tabs
+.card-tabs {
+    .nav-tabs {
+		border-bottom: 0px;
+		padding: 7px 7px!important;
+		border-radius: 5rem;
+		flex-wrap: wrap;
+			
+        .nav-link {
+            border-radius:5rem;
+		    padding: 10px 22px;
+			font-weight: 600;
+			font-size:16px;
+			border:0;
+            &.active {
+                color: $black;
+            }
+			@include respond('laptop') {
+				padding: 8px 15px;
+				font-weight: 400;
+				font-size: 13px;
+			}
+        }
+		&.tabs-lg{
+			border-bottom: 0px;
+			padding: 7px 7px;
+			border-radius: 5rem;
+			flex-wrap: wrap;
+				
+			.nav-link {
+				border-radius:5rem;
+				padding: 17px 30px;
+				font-weight: 600;
+				font-size:18px;
+				border:0;
+				span{
+					display:inline-block;
+					margin-right:10px;
+					color:white;
+					
+				}
+				&.active {
+					color: $black;
+					span{
+						color:$white;
+						margin-left: 10px;
+					}
+				}
+				@include respond('laptop') {
+					padding: 8px 15px;
+					font-weight: 400;
+					font-size: 13px;
+				}
+			}
+			@include respond('phone') {
+				border-radius: $radius;
+			}
+		}
+		@include respond('phone') {
+			border-radius: $radius;
+		}		
+    }
+	&.icontabs{
+		.nav-tabs{
+			background:transparent;
+			.nav-item{
+				.nav-link{
+					height:42px;
+					width:42px;
+					line-height:42px;
+					text-align:center;
+					background:rgba($gray,0.6);
+					color:$white;
+					margin-right:15px;
+					border-radius:	50px;
+					padding:0;
+					&.active{
+						background:$warning;
+					}
+					i{
+						font-size:25px;
+						line-height:42px;
+					}
+				}
+			}
+		}
+	}
+}
+
+
+
+//shadows
+.shadow-primary{
+	box-shadow:0px 4px 10px rgba($primary,0.4);
+}
+.shadow-warning{
+	box-shadow:0px 4px 10px rgba($warning,0.4);
+}
+.shadow-secondary{
+	box-shadow:0px 4px 10px rgba($secondary,0.4);
+}
+.shadow-info{
+	box-shadow:0px 4px 10px rgba($info,0.4);
+}
+.shadow-danger{
+	box-shadow:0px 4px 10px rgba($danger,0.4);
+}
+
+
+.heart {
+    width: 60px;
+    height: 60px;
+    display: inline-block;
+    background: url('../images/like.png');
+    cursor: pointer;
+    margin: -25px -15px;
+}
+.heart-blast {
+    background-position: -1680px 0 !important;
+    transition: background 1s steps(28);
+}
+
+
+//contact-bx
+
+.contact-bx{
+	border-width:2px;
+	border-color:$white;
+	text-align: center;
+	.image-bx{
+		display:inline-block;
+		position:relative;
+		margin-bottom: 10px;
+		span.active{
+			height:24px;
+			width:24px;
+			position:absolute;
+			bottom: 3px;
+			right: 3px;
+			border-radius:2rem;
+			background:$primary;
+			border:4px solid $white;
+		}
+	}
+	ul{
+		display:flex;
+		justify-content:center;
+		li{
+			a{
+				color:$primary;
+				font-size: 25px;
+				width:48px;
+				height:48px;
+				background:rgba($primary, 0.2);
+				display: block;
+				line-height: 48px;
+				border-radius: 50px;
+				text-align: center;
+				margin: 0 5px;
+				&:hover{
+					background:$primary;
+					color:white;
+				}
+			}
+		}
+	}
+	&:hover{
+		border-color:$primary;
+		box-shadow:0px 0px 20px rgba($primary,0.1);
+	}
+	@include respond ('phone-land'){
+		.media{
+			display:block;
+			text-align:center;
+			.image-bx{
+				margin-right:0px!important;
+				margin-bottom: 10px;
+			}
+		}
+		ul{
+			justify-content:center;
+			li{
+				a{
+					padding: 0 10px;
+				}
+			}
+		}
+	}
+	.card-header{
+		position:absolute;
+		right:0;
+		top:0;
+		.dropdown{
+			margin-left:auto;
+		}
+	}
+	.card-body{
+		.image-bx{
+			img{
+				height:120px;
+				width:120px;
+			}
+		}
+	}
+	.media-body{
+		h6{
+			margin-top:5px;
+		}
+		p{
+			margin-bottom:30px;
+		}
+		
+	}
+	@include respond ('tab-land'){
+		.card-body .image-bx{
+			img{
+				height:80px;
+				width:80px;
+			}
+			span.active{
+				height: 16px;
+				border-width:2px;
+				width: 16px;
+			}
+		}
+		.card-header{
+			padding:15px;
+		}
+		.media-body h6{
+			font-size:16px!important;
+		}
+		ul li a{
+			width: 40px;
+			height: 40px;
+			line-height:40px;
+			font-size:22px;
+		}
+	}
+}
+//project-page
+.bolt-icon{
+	height:55px;
+	width:55px;
+	line-height:55px;
+	text-align:center;
+	min-width:55px;
+	display:block;
+	background: $primary;
+	font-size:25px;
+	color:$white;
+	border-radius:5rem;
+	@include respond ('phone'){
+		height:45px;
+		width:45px;
+		line-height:45px;
+		min-width:45px;
+	}
+}
+.project-bx{
+	.title{
+		font-size:20px;
+	}
+	.img-2{
+		width:55px;
+	}
+	@include respond ('phone'){
+		.title{
+			font-size:15px;
+		}
+		.img-2{
+			width:45px;
+		}
+	}
+}
+
+
+//kanban
+.kanban-bx{
+	display: flex;
+    width: 100%;
+    overflow-x: auto;
+	flex-wrap:nowrap;
+	.col{
+		width:360px;
+		min-width:360px;
+		flex-grow: unset;
+		flex-basis:unset;
+		.card{
+			height:auto;
+		}
+	}
+	&::-webkit-scrollbar {
+		background-color: #ECECEC;
+		width: 8px;
+		height: 8px;
+	}
+	&::-webkit-scrollbar-thumb{
+		background-color: #7e7e7e;
+		border-radius: 10px;
+	}
+	@include respond ('phone-land'){
+		display: block;
+		width: auto;
+		.col{
+			width:100%;
+			min-width:100%;
+			flex-basis: 0;
+			flex-grow: 1;
+		}
+	}
+}
+.title-num{
+	font-size:32px;
+	@include respond ('phone'){
+		font-size:20px;
+	}
+}
+.users-lg{
+	display:flex;
+	li{
+		margin-right: -10px;
+		img{
+			height:44px;
+			width:44px;
+			border-radius: 45px;
+			border: 2px solid #fff;
+		}
+	}
+}
+
+.add-people{
+	padding: 0 15px;
+	a{
+		color:$primary;
+		width:129px;
+		height:32px;
+		font-size:13px;
+		background:rgba($primary,0.2);
+		padding: 6px 10px;
+		border-radius: 4px;
+	}
+}
+
+//chat box
+.chat-box{
+	.message-sent {
+		width: 62%;
+		text-align:right;
+		p{
+			background:#8850FF;
+			text-align:left;
+			border-radius:20px 20px 0 20px;
+			padding:10px 20px;
+			color:$white;
+			font-size: 16px;
+			font-weight:300;
+		}
+		@include respond ('phone'){
+			width:100%;
+			p{
+				border-radius: 10px 10px 0 10px;
+				padding: 5px 8px;
+				font-size:12px;
+			}
+		}
+	}
+	.message-received{
+		width: 62%;
+		text-align:left;
+		p{
+			background:rgba($dark,0.14);
+			text-align:left;
+			font-size:14px;
+			border-radius:0 20px 20px 20px;
+			padding:10px 20px;
+			color:$black;
+			font-weight:400;
+		}
+		@include respond ('phone'){
+			width:100%;
+			p{
+				font-size:12px;
+				border-radius:0 10px 10px 10px;
+				padding: 5px 8px;
+			}
+		}
+	}	
+	.type-massage{
+		border:2px solid $primary!important;
+		margin: 1.25rem 1.875rem 1.25rem;
+		padding:10px;
+		border-radius:1.375rem;
+		textarea{
+			border:0;
+			height: 56px;
+			resize: none;
+			padding: 17px 15px;
+		}
+		.btn:focus{
+			box-shadow:none;
+		}
+		@include respond ('phone'){
+			margin: 5px 15px 15px;
+			padding: 5px 8px;
+			textarea{
+				font-size:12px;
+				padding: 11px 5px;
+				height: 40px;
+			}
+		}
+	}
+	.title-nm{
+		font-size:20px;
+		@include respond ('phone'){
+			font-size:15px;
+		}
+	}
+}
+//calendar
+
+.cal-ic{
+	height:60px;
+	width:60px;
+	text-align: center;
+	display: block;
+	min-width: 60px;
+	line-height: 60px;
+	font-size: 31px;
+	@include respond ('phone'){
+		height: 45px;
+		width: 45px;
+		min-width: 45px;
+		line-height: 45px;
+		font-size: 24px;
+	}
+}
+
+.add-project-sidebar{
+	background: $primary;
+	display: block;
+    padding: 20px 20px;
+    border-radius: $radius;
+    position: relative;
+    text-align: center;
+    color: #fff;
+    margin: 30px 20px 15px;
+	&:hover{
+		color:$white;
+	}
+	@include custommq($max: 1350px) {
+		padding: 15px 15px;
+		margin: 25px 15px 10px;
+	}
+	@include respond ('phone'){
+		margin: 15px 20px 0px;
+	}
+}
+
+.widgetChart1{
+	max-height:200px;
+}
+.donut-chart-sale{
+	small{
+		font-size: 16px;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		left: 0;
+		display: flex;
+		align-items: center;
+		top: 0;
+		justify-content: center;
+		font-weight: 600;
+	}
+}
+.project-media{
+	img{
+		height:55px;
+		width:55px;
+		border-radius:50px;
+		@include respond ('phone'){
+			height:44px;
+			width:44px;
+		}
+	}
+}
+.project-info{
+	padding: 10px 15px;
+	flex-flow: wrap;
+	display: flex;
+	align-items: center;
+	@include respond ('phone'){
+		padding: 10px 0px;
+	}
+}
+.status-btn{
+	margin-left:auto;
+	margin-right:15px;
+	width: 140px;
+    padding: 14px 12px;
+	@include custommq ($max:1600px){
+		margin-left:0;
+	}
+	@include respond ('tab-land'){
+		margin-left:auto;
+	}
+	@include respond ('tab-port'){
+		margin-left:0;
+	}
+}
+.project-nav{
+	margin-bottom:40px;
+	border-bottom:2px solid $border-color;
+	display: flex;
+	flex-wrap:wrap;
+    justify-content: space-between;
+	align-items: center;
+	padding-bottom: 28px;
+	@include respond ('tab-land'){
+		 margin-bottom: 20px;
+		 padding-bottom: 20px;
+	}
+	@include respond ('tab-port'){
+		display:block;
+	}
+	@include respond ('phone'){
+		margin-bottom: 15px;
+		padding-bottom: 15px;
+	}
+}
+.card-tabs{
+	.nav-tabs{
+		&.style-1{
+			padding:0;
+			.nav-item{
+				.nav-link{
+					padding:0;
+					padding-right:25px;
+					color:#B5B5B5;
+					font-size: 18px;
+					font-weight: 500;
+					&.active{
+						background:transparent;
+						color:$black;
+					}
+				}
+			}
+			@include respond ('laptop'){
+				.nav-item{
+					.nav-link{
+						font-size:14px;
+						padding-right: 16px;
+					}
+				}
+			}
+		}
+		&.style-2{
+		border-bottom:0;
+			.nav-item{
+				.nav-link{
+					border-radius: 5rem;
+					padding: 15px 20px;
+					font-weight: 500;
+					font-size: 17px;
+					border: 0;
+					.badge{
+						color:$white;
+					}
+					&.active{
+						color:$black;
+					}
+					@include respond ('laptop'){
+						font-size:14px;
+					}
+					@include respond ('tab-land'){
+						padding: 10px 15px;
+					}
+				}
+			}
+			@include respond ('phone'){
+					margin-bottom: 10px;
+				.nav-item{
+					.nav-link{
+						  padding: 5px 10px;
+					}
+				}
+			}
+		}
+	}
+}
+
+.project-list-group{
+	.card{
+		 margin-bottom: 17px;
+	}
+}
+
+
+//chat-list-area
+.chat-list-area{
+	@include transitionMedium;
+	padding: 15px 30px;
+	p{
+		margin-bottom:0;
+	}
+	&:hover,&.active{
+		background:#FFFCE4;
+	}
+	@include respond ('phone'){
+		padding: 15px 15px;
+	}
+}
+
+//chat-box-area
+.chat-box-area{
+	height:630px;
+	@include respond ('phone'){
+		height:500px;
+	}
+}
+
+//message-search-area
+.message-search-area{
+	padding: 0 30px 20px;
+	.form-control{
+		color:$black;
+		padding: 0 25px;
+		font-size:16px;
+		border-color:$border-color;
+		border-right:0;
+		background:transparent;
+		border-radius:2rem;
+		&::placeholder{
+			color:#BEBEBE;
+		}
+	}
+	.input-group-text{
+		border-radius:2rem;
+		border:1px solid $border-color;
+		background:transparent;
+		padding-right: 25px;
+		border-left:0;
+		i{
+			font-size:22px;
+		}
+	}
+	@include respond ('laptop'){
+		.input-group-append{
+			 height: 41px;
+		}
+	}
+	@include respond ('phone'){
+		 padding: 0 15px 20px;
+		 .form-control{
+			padding: 0 15px;
+			font-size: 14px;
+		 }
+	}
+}
+
+
+.image-placeholder {
+    position: relative;
+    max-width: 130px;
+    margin: 10px auto;
+    .avatar-edit {
+        position: absolute;
+        right: 12px;
+        z-index: 1;
+        top: 10px;
+        input {
+            display: none;
+            + label {
+                display: inline-block;
+                width: 34px;
+                height: 34px;
+                margin-bottom: 0;
+                border-radius: 100%;
+                background: #FFFFFF;
+                border: 1px solid transparent;
+                box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
+                cursor: pointer;
+                font-weight: normal;
+                transition: all .2s ease-in-out;
+                &:hover {
+                    background: #f1f1f1;
+                    border-color: #d6d6d6;
+                }
+                &:after {
+                    content: "\f040";
+                    font-family: 'FontAwesome';
+                    color: #757575;
+                    position: absolute;
+                    top: 4px;
+                    left: 0;
+                    right: 0;
+                    text-align: center;
+                    margin: auto;
+                }
+            }
+        }
+    }
+    .avatar-preview {
+        width: 120px;
+        height: 120px;
+        position: relative;
+        border-radius: 100%;
+        border: 6px solid #F8F8F8;
+        box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+        & > div {
+            width: 100%;
+            height: 100%;
+            border-radius: 100%;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+    }
+}
