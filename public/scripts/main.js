@@ -1,7 +1,9 @@
 const urlParams = new URLSearchParams(window.location.search);
-const witnessOn = urlParams.get('witnessOn') ?? false;
+var witnessOn = urlParams.get('witnessOn') ?? false;
+var reloadOnMove = urlParams.get('reloadOnMove') ?? false;
 let hotspots = L.layerGroup();
 let forecasts = L.layerGroup();
+let witnesses = L.layerGroup();
 
 document.addEventListener('DOMContentLoaded', function () {
     var db = firebase.database();
@@ -37,6 +39,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }).setView([35.1, 33.4], 10);
 
+    drawButtons(mymap);
+
     L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZXJpYy1oZWxpdW0iLCJhIjoiY2tvNnp4ZnhuMXI2MjJvczVhODFiNG9wZCJ9.lbv1OPPLn1gUY9Lk1owA0Q', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
         maxZoom: 18,
@@ -48,20 +52,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     hotspots.addTo(mymap);
     forecasts.addTo(mymap);
+    witnesses.addTo(mymap);
 
-    mymap.on('moveend', function (ev) {
-        const sw = mymap.getBounds().getSouthWest();
-        const ne = mymap.getBounds().getNorthEast();
-        const box = {
-            swlat: sw.lat,
-            swlon: sw.lng,
-            nelat: ne.lat,
-            nelon: ne.lng
-        };
-        getHeliumAPIData(mymap, box);
-    });
+    if (reloadOnMove) {
+        mymap.on('moveend', function (ev) {
+            const box = getMapBox(mymap);
+            getHeliumAPIData(box);
+        });
+    };
 
-    getHeliumAPIData(mymap);
+    getHeliumAPIData();
 
     var spotsRef = db.ref('spots');
     spotsRef.on('value', (snapshot) => {
@@ -70,7 +70,19 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-function getHeliumAPIData(map, box) {
+function getMapBox(mymap) {
+    const sw = mymap.getBounds().getSouthWest();
+    const ne = mymap.getBounds().getNorthEast();
+    const box = {
+        swlat: sw.lat,
+        swlon: sw.lng,
+        nelat: ne.lat,
+        nelon: ne.lng
+    };
+    return box;
+}
+
+function getHeliumAPIData(box) {
     if (!box) {
         box = {
             swlat: 34.357042,
@@ -85,17 +97,9 @@ function getHeliumAPIData(map, box) {
                 var data = response.data.data;
                 drawHotspots(data);
                 if (witnessOn) {
+                    witnesses.clearLayers();
                     _.each(data, function (x) {
-                        axios.get(`https://api.helium.io/v1/hotspots/${x.address}/witnesses`)
-                            .then(function (response) {
-                                if (response && response.data && response.data.data) {
-                                    var data = response.data.data;
-                                    drawWitnesses(data, x);
-                                }
-                            })
-                            .catch(function (error) {
-                                console.log(error);
-                            });
+                        getWitnesses(x, drawWitnesses);
                     });
                 }
             }
@@ -131,7 +135,23 @@ function drawHotspots(data) {
         });
         hotspots.addLayer(circleSmall);
         circleSmall.bindTooltip(x.name);
+        circleSmall.on('mouseup', function () {
+            getWitnesses(x, drawWitnesses);
+        });
     });
+}
+
+function getWitnesses(basespot, callback) {
+    axios.get(`https://api.helium.io/v1/hotspots/${basespot.address}/witnesses`)
+        .then(function (response) {
+            if (response && response.data && response.data.data) {
+                var data = response.data.data;
+                callback(data, basespot);
+            }
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
 }
 
 function drawWitnesses(data, basespot) {
@@ -142,9 +162,11 @@ function drawWitnesses(data, basespot) {
         alpha: 0.25
     });
     _.each(data, function (d) {
-        var latlngs = [[basespot.lat, basespot.lng], [d.lat, d.lng]];
-        var polyline = L.polyline(latlngs, { color: cc });
-        hotspots.addLayer(polyline);
+        const baseLatLng = L.latLng(basespot.lat, basespot.lng);
+        const targetLatLng = L.latLng(d.lat, d.lng);
+        var polyline = L.polyline([baseLatLng, targetLatLng], { color: cc });
+        witnesses.addLayer(polyline);
+        polyline.bindTooltip(`${Math.round(baseLatLng.distanceTo(targetLatLng)) / 1000}km`);
     });
 }
 
@@ -165,4 +187,76 @@ function drawForecasts(spots) {
         forecasts.addLayer(circleSmall);
         circleSmall.bindTooltip(x.name);
     });
+}
+
+function drawButtons(map) {
+    addToggleWitnesses(map);
+    addToggleTheme(map);
+}
+
+function addToggleWitnesses(map) {
+    var stateChangingButton = L.easyButton({
+        states: [{
+            stateName: 'witness-on',
+            icon: 'fa-eye',
+            title: 'Show all witnesses',
+            onClick: function (btn, map) {
+                witnessOn = true;
+                const box = getMapBox(map);
+                getHeliumAPIData(box);
+                map.flyTo(map.getCenter(), map.getZoom() - 0.1, {
+                    animate: true,
+                    duration: 0.5,
+                });
+                btn.state('witness-off');
+            }
+        }, {
+            stateName: 'witness-off',
+            icon: 'fa-eye-slash',
+            title: 'Hide all witnesses',
+            onClick: function (btn, map) {
+                witnessOn = false;
+                witnesses.clearLayers();
+                btn.state('witness-on');
+            }
+        }]
+    });
+    stateChangingButton.addTo(map);
+}
+
+function addToggleTheme(map) {
+    var stateChangingButton = L.easyButton({
+        states: [{
+            stateName: 'light-on',
+            icon: 'fa-map-o',
+            title: 'Light theme',
+            onClick: function (btn, map) {
+                L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZXJpYy1oZWxpdW0iLCJhIjoiY2tvNnp4ZnhuMXI2MjJvczVhODFiNG9wZCJ9.lbv1OPPLn1gUY9Lk1owA0Q', {
+                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                    maxZoom: 18,
+                    id: 'mapbox/light-v10',
+                    tileSize: 512,
+                    zoomOffset: -1,
+                    accessToken: 'pk.eyJ1IjoiZXJpYy1oZWxpdW0iLCJhIjoiY2tvNnp4ZnhuMXI2MjJvczVhODFiNG9wZCJ9.lbv1OPPLn1gUY9Lk1owA0Q'
+                }).addTo(map);
+                btn.state('light-off');
+            }
+        }, {
+            stateName: 'light-off',
+            icon: 'fa-map',
+            title: 'Dark theme',
+            onClick: function (btn, map) {
+                L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZXJpYy1oZWxpdW0iLCJhIjoiY2tvNnp4ZnhuMXI2MjJvczVhODFiNG9wZCJ9.lbv1OPPLn1gUY9Lk1owA0Q', {
+                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                    maxZoom: 18,
+                    id: 'mapbox/dark-v10',
+                    tileSize: 512,
+                    zoomOffset: -1,
+                    accessToken: 'pk.eyJ1IjoiZXJpYy1oZWxpdW0iLCJhIjoiY2tvNnp4ZnhuMXI2MjJvczVhODFiNG9wZCJ9.lbv1OPPLn1gUY9Lk1owA0Q'
+                }).addTo(map);
+                btn.state('light-on');
+            }
+        }]
+    });
+    stateChangingButton.addTo(map);
 }
