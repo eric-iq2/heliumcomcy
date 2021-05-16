@@ -1,5 +1,7 @@
 const urlParams = new URLSearchParams(window.location.search);
 const witnessOn = urlParams.get('witnessOn') ?? false;
+let hotspots = L.layerGroup();
+let forecasts = L.layerGroup();
 
 document.addEventListener('DOMContentLoaded', function () {
     var db = firebase.database();
@@ -44,18 +46,51 @@ document.addEventListener('DOMContentLoaded', function () {
         accessToken: 'pk.eyJ1IjoiZXJpYy1oZWxpdW0iLCJhIjoiY2tvNnp4ZnhuMXI2MjJvczVhODFiNG9wZCJ9.lbv1OPPLn1gUY9Lk1owA0Q'
     }).addTo(mymap);
 
-    axios.get('https://api.helium.io/v1/hotspots/location/box?swlat=34.357042&swlon=31.854858&nelat=35.811131&nelon=34.925537')
+    hotspots.addTo(mymap);
+    forecasts.addTo(mymap);
+
+    mymap.on('moveend', function (ev) {
+        const sw = mymap.getBounds().getSouthWest();
+        const ne = mymap.getBounds().getNorthEast();
+        const box = {
+            swlat: sw.lat,
+            swlon: sw.lng,
+            nelat: ne.lat,
+            nelon: ne.lng
+        };
+        getHeliumAPIData(mymap, box);
+    });
+
+    getHeliumAPIData(mymap);
+
+    var spotsRef = db.ref('spots');
+    spotsRef.on('value', (snapshot) => {
+        var spots = snapshot.val();
+        drawForecasts(spots);
+    });
+});
+
+function getHeliumAPIData(map, box) {
+    if (!box) {
+        box = {
+            swlat: 34.357042,
+            swlon: 31.854858,
+            nelat: 35.811131,
+            nelon: 34.925537
+        };
+    }
+    axios.get(`https://api.helium.io/v1/hotspots/location/box?swlat=${box.swlat}&swlon=${box.swlon}&nelat=${box.nelat}&nelon=${box.nelon}`)
         .then(function (response) {
             if (response && response.data && response.data.data) {
                 var data = response.data.data;
-                drawHotspots(mymap, data);
+                drawHotspots(data);
                 if (witnessOn) {
                     _.each(data, function (x) {
                         axios.get(`https://api.helium.io/v1/hotspots/${x.address}/witnesses`)
                             .then(function (response) {
                                 if (response && response.data && response.data.data) {
                                     var data = response.data.data;
-                                    drawWitnesses(mymap, data);
+                                    drawWitnesses(data, x);
                                 }
                             })
                             .catch(function (error) {
@@ -68,15 +103,10 @@ document.addEventListener('DOMContentLoaded', function () {
         .catch(function (error) {
             console.log(error);
         });
+}
 
-    var spotsRef = db.ref('spots');
-    spotsRef.on('value', (snapshot) => {
-        var spots = snapshot.val();
-        drawForecasts(mymap, spots);
-    });
-});
-
-function drawHotspots(map, data) {
+function drawHotspots(data) {
+    hotspots.clearLayers();
     _.each(data, function (x) {
         var c = randomColor({
             seed: x.owner,
@@ -90,32 +120,35 @@ function drawHotspots(map, data) {
             fillOpacity: 0.1,
             radius: x.status.height / 300 ?? 2800,
             interactive: false
-        }).addTo(map);
+        });
+        hotspots.addLayer(circleLarge);
         var circleSmall = L.circle([x.lat, x.lng], {
             stroke: x.status.online == "online",
             color: c,
             fillColor: c,
             fillOpacity: 0.5,
             radius: 300
-        }).addTo(map);
+        });
+        hotspots.addLayer(circleSmall);
         circleSmall.bindTooltip(x.name);
     });
 }
 
-function drawWitnesses(map, data) {
+function drawWitnesses(data, basespot) {
     var cc = randomColor({
-        seed: x.owner,
+        seed: basespot.owner,
         luminosity: 'dark',
         format: 'rgba',
         alpha: 0.25
     });
     _.each(data, function (d) {
-        var latlngs = [[x.lat, x.lng], [d.lat, d.lng]];
-        var polyline = L.polyline(latlngs, { color: cc }).addTo(map);
+        var latlngs = [[basespot.lat, basespot.lng], [d.lat, d.lng]];
+        var polyline = L.polyline(latlngs, { color: cc });
+        hotspots.addLayer(polyline);
     });
 }
 
-function drawForecasts(map, spots) {
+function drawForecasts(spots) {
     _.each(spots, function (x) {
         var c = randomColor({
             seed: x.name,
@@ -128,7 +161,8 @@ function drawForecasts(map, spots) {
             fillColor: c,
             fillOpacity: 0.5,
             radius: 300
-        }).addTo(map);
+        });
+        forecasts.addLayer(circleSmall);
         circleSmall.bindTooltip(x.name);
     });
 }
