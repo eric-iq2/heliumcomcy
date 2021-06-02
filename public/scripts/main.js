@@ -2,11 +2,13 @@ const urlParams = new URLSearchParams(window.location.search);
 var witnessOn = urlParams.get('witnessOn') ?? false;
 var reloadOnMove = urlParams.get('reloadOnMove') ?? false;
 let hotspots = L.layerGroup();
+let selected = L.layerGroup();
 let forecasts = L.layerGroup();
 let witnesses = L.layerGroup();
+let price = 15; // USD
 
 document.addEventListener('DOMContentLoaded', function () {
-    var db = firebase.database();
+    var db = firebase?.database();
     if (location.hostname === "localhost") {
         db.useEmulator("localhost", 9000);
         console.log("localhost detected");
@@ -33,6 +35,8 @@ document.addEventListener('DOMContentLoaded', function () {
         console.warn('Error loading the Firebase SDK, check the console.');
     }
 
+    getPrice(data => price = (data?.price ?? 15 * 100000000) / 100000000);
+
     var mymap = L.map('mapid', {
         fullscreenControl: {
             pseudoFullscreen: false
@@ -51,6 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }).addTo(mymap);
 
     hotspots.addTo(mymap);
+    selected.addTo(mymap);
     forecasts.addTo(mymap);
     witnesses.addTo(mymap);
 
@@ -69,6 +74,19 @@ document.addEventListener('DOMContentLoaded', function () {
         drawForecasts(spots);
     });
 });
+
+function getPrice(callback) {
+    axios.get(`https://api.helium.io/v1/oracle/prices/current`)
+        .then(function (response) {
+            if (response && response?.data && response?.data?.data) {
+                var data = response?.data?.data;
+                callback(data);
+            }
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+}
 
 function getMapBox(mymap) {
     const sw = mymap.getBounds().getSouthWest();
@@ -93,8 +111,8 @@ function getHeliumAPIData(box) {
     }
     axios.get(`https://api.helium.io/v1/hotspots/location/box?swlat=${box.swlat}&swlon=${box.swlon}&nelat=${box.nelat}&nelon=${box.nelon}`)
         .then(function (response) {
-            if (response && response.data && response.data.data) {
-                var data = response.data.data;
+            if (response && response?.data && response?.data?.data) {
+                var data = response?.data?.data;
                 drawHotspots(data);
                 if (witnessOn) {
                     witnesses.clearLayers();
@@ -133,10 +151,23 @@ function drawHotspots(data) {
             fillOpacity: 0.5,
             radius: 300
         });
+        var circleSmallSelected = L.circle([x.lat, x.lng], {
+            stroke: x.status.online == "online",
+            color: '#fff',
+            fillColor: c,
+            fillOpacity: 1,
+            radius: 333
+        });
         hotspots.addLayer(circleSmall);
         circleSmall.bindTooltip(x.name);
         circleSmall.on('mouseup', function () {
-            getWitnesses(x, drawWitnesses);
+            selected.clearLayers();
+            selected.addLayer(circleSmallSelected);
+            clearDataShow();
+            witnesses.clearLayers();
+            hotspotDataShow(x);
+            getWitnesses(x, witnessDataShow);
+            getRewards(x, 1, rewardsDataShow);
         });
     });
 }
@@ -144,8 +175,8 @@ function drawHotspots(data) {
 function getWitnesses(basespot, callback) {
     axios.get(`https://api.helium.io/v1/hotspots/${basespot.address}/witnesses`)
         .then(function (response) {
-            if (response && response.data && response.data.data) {
-                var data = response.data.data;
+            if (response && response?.data && response?.data?.data) {
+                var data = response?.data?.data;
                 callback(data, basespot);
             }
         })
@@ -170,6 +201,61 @@ function drawWitnesses(data, basespot) {
     });
 }
 
+function clearDataShow() {
+    document.getElementById('txtLeft').innerHTML = "";
+    document.getElementById('txtRight').innerHTML = "";
+}
+
+function hotspotDataShow(spot) {
+    document.getElementById('txtLeft').innerHTML = `<b>Name:</b> ${spot.name}
+    <br />
+    <b>Owner:</b> ${spot.owner}
+    <br />
+    <b>Lat:</b> ${spot.lat}, <b>Long:</b> ${spot.lng}
+    <br />
+    <b>Elevation:</b> ${spot.elevation}, <b>Gain:</b> ${spot.gain}, <b>Reward Scale:</b> ${spot.reward_scale}
+    <br />
+    <b>Mode:</b> ${spot.mode}, <b>Status:</b> ${spot.status.online}
+    <br />
+    <b>Date added:</b> ${spot.timestamp_added}`;
+    document.getElementById('bar').classList.remove('d-none');
+}
+
+function witnessDataShow(data, spot) {
+    document.getElementById('txtRight').innerHTML = `${document.getElementById('txtRight').innerHTML}
+    <b>Witnesses:</b> ${data.length}
+    <br />`;
+    document.getElementById('bar').classList.remove('d-none');
+    drawWitnesses(data, spot);
+}
+
+function getRewards(basespot, days, callback) {
+    const start = new Date(new Date().setUTCDate(new Date().getUTCDate() - days));
+    const end = new Date();
+    axios.get(`https://api.helium.io/v1/hotspots/${basespot.address}/rewards/sum?min_time=${start.toISOString()}&max_time=${end.toISOString()}`)
+        .then(function (response) {
+            if (response && response?.data && response?.data?.data) {
+                var data = response?.data?.data;
+                callback(basespot, data, days);
+            }
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+}
+
+function rewardsDataShow(basespot, data, days) {
+    document.getElementById('txtRight').innerHTML = `${document.getElementById('txtRight').innerHTML}
+    <b>In the last:</b> ${days} ${days == 1 ? 'day' : 'days'}
+    <br />
+    <b>Rewards:</b> ${new Intl.NumberFormat().format(data.total)} HNT, ${new Intl.NumberFormat().format(data.total * price)} USD
+    <br />`;
+    document.getElementById('bar').classList.remove('d-none');
+    if (days == 1) {
+        getRewards(basespot, 30, rewardsDataShow);
+    }
+}
+
 function drawForecasts(spots) {
     _.each(spots, function (x) {
         var c = randomColor({
@@ -192,6 +278,8 @@ function drawForecasts(spots) {
 function drawButtons(map) {
     addToggleWitnesses(map);
     addToggleTheme(map);
+    addWikiLink(map);
+    addGitHubLink(map);
 }
 
 function addToggleWitnesses(map) {
@@ -239,6 +327,10 @@ function addToggleTheme(map) {
                     zoomOffset: -1,
                     accessToken: 'pk.eyJ1IjoiZXJpYy1oZWxpdW0iLCJhIjoiY2tvNnp4ZnhuMXI2MjJvczVhODFiNG9wZCJ9.lbv1OPPLn1gUY9Lk1owA0Q'
                 }).addTo(map);
+                document.querySelectorAll(".text-primary").forEach(txt => {
+                    txt.classList.toggle('text-primary');
+                    txt.classList.toggle('text-secondary');
+                });
                 btn.state('light-off');
             }
         }, {
@@ -254,9 +346,25 @@ function addToggleTheme(map) {
                     zoomOffset: -1,
                     accessToken: 'pk.eyJ1IjoiZXJpYy1oZWxpdW0iLCJhIjoiY2tvNnp4ZnhuMXI2MjJvczVhODFiNG9wZCJ9.lbv1OPPLn1gUY9Lk1owA0Q'
                 }).addTo(map);
+                document.querySelectorAll(".text-secondary").forEach(txt => {
+                    txt.classList.toggle('text-primary');
+                    txt.classList.toggle('text-secondary');
+                });
                 btn.state('light-on');
             }
         }]
     });
     stateChangingButton.addTo(map);
+}
+
+function addWikiLink(map) {
+    L.easyButton('fa-wikipedia-w', function (btn, map) {
+        window.open('https://github.com/eric-iq2/heliumcomcy/wiki', '_blank');
+    }).addTo(map);
+}
+
+function addGitHubLink(map) {
+    L.easyButton('fa-github', function (btn, map) {
+        window.open('https://github.com/eric-iq2/heliumcomcy', '_blank');
+    }).addTo(map);
 }

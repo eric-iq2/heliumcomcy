@@ -6,3 +6,13 @@ body {
 #mapid {
   height: 100%;
 }
+
+#bar {
+  z-index: 999;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  padding: 16px;
+  width: 100%;
+  font-size: small;
+}
