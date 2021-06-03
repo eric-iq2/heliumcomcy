@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
     witnesses.addTo(mymap);
 
     if (reloadOnMove) {
+        firebase.analytics().logEvent('reloadOnMove');
         mymap.on('moveend', function (ev) {
             const box = getMapBox(mymap);
             getHeliumAPIData(box);
@@ -161,6 +162,7 @@ function drawHotspots(data) {
         hotspots.addLayer(circleSmall);
         circleSmall.bindTooltip(x.name);
         circleSmall.on('mouseup', function () {
+            firebase.analytics().logEvent('circleSmall_mouseup');
             selected.clearLayers();
             selected.addLayer(circleSmallSelected);
             clearDataShow();
@@ -297,6 +299,7 @@ function addToggleWitnesses(map) {
                     duration: 0.5,
                 });
                 btn.state('witness-off');
+                firebase.analytics().logEvent('btn_witness-off');
             }
         }, {
             stateName: 'witness-off',
@@ -306,6 +309,7 @@ function addToggleWitnesses(map) {
                 witnessOn = false;
                 witnesses.clearLayers();
                 btn.state('witness-on');
+                firebase.analytics().logEvent('btn_witness-on');
             }
         }]
     });
@@ -332,6 +336,7 @@ function addToggleTheme(map) {
                     txt.classList.toggle('text-secondary');
                 });
                 btn.state('light-off');
+                firebase.analytics().logEvent('btn_light-off');
             }
         }, {
             stateName: 'light-off',
@@ -351,6 +356,7 @@ function addToggleTheme(map) {
                     txt.classList.toggle('text-secondary');
                 });
                 btn.state('light-on');
+                firebase.analytics().logEvent('btn_light-on');
             }
         }]
     });
@@ -360,11 +366,13 @@ function addToggleTheme(map) {
 function addWikiLink(map) {
     L.easyButton('fa-wikipedia-w', function (btn, map) {
         window.open('https://github.com/eric-iq2/heliumcomcy/wiki', '_blank');
+        firebase.analytics().logEvent('btn_addWikiLink');
     }).addTo(map);
 }
 
 function addGitHubLink(map) {
     L.easyButton('fa-github', function (btn, map) {
         window.open('https://github.com/eric-iq2/heliumcomcy', '_blank');
+        firebase.analytics().logEvent('btn_addGitHubLink');
     }).addTo(map);
 }
