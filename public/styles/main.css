@@ -13,6 +13,7 @@ body {
   left: 0;
   bottom: 0;
   padding: 16px;
+  pointer-events: none;
   width: 100%;
   font-size: small;
 }
