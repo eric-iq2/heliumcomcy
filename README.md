@@ -29,6 +29,9 @@ Hopefully I'll get some time to do all this. Let me know stuff I should add.
 Like what you see? Found it useful?
 Tip me some HNT 13RL5tfJWmvGXkEyCFmo42Maq7MsPkmMCdCr7h6mH5q29jYENzL or come say hi.
 
+Our Discord
+https://discord.gg/zDprytCzpj
+
 Official Helium Discord
 https://discord.gg/helium #cy-cyprus
 
